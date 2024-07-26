@@ -39,7 +39,20 @@ func TestMakeDepostiRequest(t *testing.T) {
 	ip := "103.106.8.104"
 	orderId := "QvE8dZshpKhaOmHY"
 	checkoutURL := "https://example.com/checkout"
-	response, err := services.MakeDepostiRequest(mockClient, ip, orderId, checkoutURL)
+
+	reqBody := models.CustomerDepositData{
+		OrderAmount: "100",
+		Email:       "customer@cust.com",
+		FirstName:   "John",
+		LastName:    "Doe",
+		Address:     "123 Main St",
+		CountryCode: "US",
+		City:        "New York",
+		ZipCode:     "10001",
+		Phone:       "12819374192",
+	}
+
+	response, err := services.MakeDepostiRequest(mockClient, reqBody, ip, orderId, checkoutURL)
 	// Verify the results
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
