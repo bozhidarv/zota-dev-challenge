@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
+	"github.com/bozhidarv/zota-dev-challenge/internal/models"
 	"github.com/bozhidarv/zota-dev-challenge/internal/services"
 )
 
@@ -50,9 +51,18 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		orderId := uuid.New().String()
 
+		defer r.Body.Close()
+
+		var reqBody models.CustomerDepositData
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			fmt.Println("Error decoding req body:", err)
+			http.Error(w, "Error making deposit request", http.StatusInternalServerError)
+		}
+
 		client := &http.Client{}
-		responseBody, err := services.MakeDepostiRequest(
+		resBody, err := services.MakeDepostiRequest(
 			client,
+			reqBody,
 			getIPAddress(r),
 			orderId,
 			getFullURL(r),
@@ -61,16 +71,16 @@ func main() {
 			http.Error(w, "Error making deposit request", http.StatusInternalServerError)
 		}
 
-		go services.MakeOrderStatusRequest(client, orderId, responseBody.Data.OrderID)
+		go services.MakeOrderStatusRequest(client, orderId, resBody.Data.OrderID)
 
-		respBodyStr, _ := json.Marshal(responseBody)
+		respBodyStr, _ := json.Marshal(resBody)
 
 		_, err = w.Write(respBodyStr)
 		if err != nil {
 			http.Error(w, "Error writing response", http.StatusInternalServerError)
 		}
 		w.WriteHeader(http.StatusOK)
-	}).Methods("GET")
+	}).Methods("POST")
 	http.Handle("/", r)
 
 	srv := &http.Server{

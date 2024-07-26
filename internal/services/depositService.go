@@ -19,28 +19,29 @@ func encryptSHA256(input string) string {
 
 func MakeDepostiRequest(
 	client models.HTTPClient,
+	reqBody models.CustomerDepositData,
 	ip string,
 	orderId string,
 	checkoutURL string,
 ) (models.BasicResponse[models.DepositResponseData], error) {
 	depositReq := models.DepositReq{
 		MerchantOrderID:     orderId,
-		MerchantOrderDesc:   "Test order",
-		OrderAmount:         "500.00",
+		MerchantOrderDesc:   "Deposit for order " + orderId,
+		OrderAmount:         reqBody.OrderAmount,
 		OrderCurrency:       "USD",
-		CustomerEmail:       "customer@email-address.com",
-		CustomerFirstName:   "John",
-		CustomerLastName:    "Doe",
-		CustomerAddress:     "5/5 Moo 5 Thong Nai Pan Noi Beach, Baan Tai, Koh Phangan",
-		CustomerCountryCode: "TH",
-		CustomerCity:        "Surat Thani",
-		CustomerZipCode:     "84280",
-		CustomerPhone:       "+66-77999110",
+		CustomerEmail:       reqBody.Email,
+		CustomerFirstName:   reqBody.FirstName,
+		CustomerLastName:    reqBody.LastName,
+		CustomerAddress:     reqBody.Address,
+		CustomerCountryCode: reqBody.CountryCode,
+		CustomerCity:        reqBody.Email,
+		CustomerZipCode:     reqBody.ZipCode,
+		CustomerPhone:       reqBody.Phone,
 		CustomerIP:          ip,
 		RedirectURL:         "https://duckduckgo.com/?q=yes&t=brave&ia=web",
 		CheckoutURL:         checkoutURL,
 		Signature: encryptSHA256(
-			models.EndpointID + orderId + "500.00customer@email-address.com" + models.APIKey,
+			models.EndpointID + orderId + reqBody.OrderAmount + reqBody.Email + models.APIKey,
 		),
 	}
 
