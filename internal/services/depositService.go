@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/bozhidarv/zota-dev-challenge/internal/models"
 )
@@ -17,14 +16,6 @@ func encryptSHA256(input string) string {
 	hash.Write([]byte(input))
 	return hex.EncodeToString(hash.Sum(nil))
 }
-
-var (
-	EndpointID = os.Getenv("ZOTAPAY_ENDPOINT_ID")
-	APIKey     = os.Getenv("ZOTAPAY_API_KEY")
-	CURR       = os.Getenv("ZOTAPAY_CURR")
-	MerchantID = os.Getenv("ZOTAPAY_MERCHANT_ID")
-	BaseURL    = os.Getenv("ZOTAPAY_BASE_URL")
-)
 
 func MakeDepostiRequest(
 	ip string,
@@ -48,7 +39,7 @@ func MakeDepostiRequest(
 		RedirectURL:         "https://duckduckgo.com/?q=yes&t=brave&ia=web",
 		CheckoutURL:         checkoutURL,
 		Signature: encryptSHA256(
-			EndpointID + orderId + "500.0customer@email-address.com" + APIKey,
+			models.EndpointID + orderId + "500.00customer@email-address.com" + models.APIKey,
 		),
 	}
 
@@ -58,7 +49,7 @@ func MakeDepostiRequest(
 		return models.BasicResponse[models.DepositResponseData]{}, err
 	}
 
-	url := fmt.Sprintf("https://%s/api/v1/deposit/request/%s/", BaseURL, EndpointID)
+	url := fmt.Sprintf("https://%s/api/v1/deposit/request/%s/", models.BaseURL, models.EndpointID)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(orderJSON))
 	if err != nil {
 		fmt.Println("Error creating request:", err)
@@ -83,6 +74,7 @@ func MakeDepostiRequest(
 
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Unexpected status code:", resp.StatusCode)
+		fmt.Println("message: ", responseBody.Message)
 		return models.BasicResponse[models.DepositResponseData]{}, err
 	}
 
