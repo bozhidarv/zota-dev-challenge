@@ -15,7 +15,6 @@ type DepositReq struct {
 	CustomerPhone       string `json:"customerPhone"`
 	CustomerIP          string `json:"customerIP"`
 	RedirectURL         string `json:"redirectUrl"`
-	CallbackURL         string `json:"callbackUrl"`
 	CheckoutURL         string `json:"checkoutUrl"`
 	Signature           string `json:"signature"`
 }
