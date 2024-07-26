@@ -16,21 +16,17 @@ import (
 )
 
 func getIPAddress(r *http.Request) string {
-	// Try to get the IP from the X-Forwarded-For header
 	ip := r.Header.Get("X-Forwarded-For")
 	if ip != "" {
-		// X-Forwarded-For can contain multiple IPs, get the first one
 		ips := strings.Split(ip, ",")
 		return strings.TrimSpace(ips[0])
 	}
 
-	// Try to get the IP from the X-Real-IP header
 	ip = r.Header.Get("X-Real-IP")
 	if ip != "" {
 		return ip
 	}
 
-	// Get the IP from RemoteAddr
 	ip, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		return r.RemoteAddr
@@ -49,6 +45,7 @@ func getFullURL(r *http.Request) string {
 
 func main() {
 	r := mux.NewRouter()
+
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		orderId := uuid.New().String()

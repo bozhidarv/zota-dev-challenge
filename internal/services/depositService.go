@@ -58,7 +58,6 @@ func MakeDepostiRequest(
 		return models.BasicResponse[models.DepositResponseData]{}, err
 	}
 
-	// Create a new HTTP POST request
 	url := fmt.Sprintf("https://%s/api/v1/deposit/request/%s/", BaseURL, EndpointID)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(orderJSON))
 	if err != nil {
@@ -66,10 +65,8 @@ func MakeDepostiRequest(
 		return models.BasicResponse[models.DepositResponseData]{}, err
 	}
 
-	// Set the Content-Type header
 	req.Header.Set("Content-Type", "application/json")
 
-	// Send the request using the http.DefaultClient
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -78,14 +75,12 @@ func MakeDepostiRequest(
 	}
 	defer resp.Body.Close()
 
-	// Print the response body (if needed)
 	var responseBody models.BasicResponse[models.DepositResponseData]
 	if err := json.NewDecoder(resp.Body).Decode(&responseBody); err != nil {
 		fmt.Println("Error decoding response:", err)
 		return models.BasicResponse[models.DepositResponseData]{}, err
 	}
 
-	// Check the response status
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Unexpected status code:", resp.StatusCode)
 		return models.BasicResponse[models.DepositResponseData]{}, err
