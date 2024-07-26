@@ -55,6 +55,8 @@ func main() {
 			http.Error(w, "Error making deposit request", http.StatusInternalServerError)
 		}
 
+		go services.MakeOrderStatusRequest(orderId, responseBody.Data.OrderID)
+
 		respBodyStr, _ := json.Marshal(responseBody)
 
 		_, err = w.Write(respBodyStr)
