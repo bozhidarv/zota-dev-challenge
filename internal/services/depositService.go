@@ -18,6 +18,7 @@ func encryptSHA256(input string) string {
 }
 
 func MakeDepostiRequest(
+	client models.HTTPClient,
 	ip string,
 	orderId string,
 	checkoutURL string,

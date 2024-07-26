@@ -50,12 +50,18 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		orderId := uuid.New().String()
 
-		responseBody, err := services.MakeDepostiRequest(getIPAddress(r), orderId, getFullURL(r))
+		client := &http.Client{}
+		responseBody, err := services.MakeDepostiRequest(
+			client,
+			getIPAddress(r),
+			orderId,
+			getFullURL(r),
+		)
 		if err != nil {
 			http.Error(w, "Error making deposit request", http.StatusInternalServerError)
 		}
 
-		go services.MakeOrderStatusRequest(orderId, responseBody.Data.OrderID)
+		go services.MakeOrderStatusRequest(client, orderId, responseBody.Data.OrderID)
 
 		respBodyStr, _ := json.Marshal(responseBody)
 

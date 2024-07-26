@@ -10,7 +10,7 @@ import (
 	"github.com/bozhidarv/zota-dev-challenge/internal/models"
 )
 
-func MakeOrderStatusRequest(merchantOrderID string, orderId string) {
+func MakeOrderStatusRequest(client models.HTTPClient, merchantOrderID string, orderId string) {
 	time.Sleep(10 * time.Second)
 
 	currTimestamp := strconv.FormatInt(time.Now().Unix(), 10)
@@ -35,7 +35,6 @@ func MakeOrderStatusRequest(merchantOrderID string, orderId string) {
 		return
 	}
 
-	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("Error sending request:", err)
@@ -55,6 +54,6 @@ func MakeOrderStatusRequest(merchantOrderID string, orderId string) {
 	}
 
 	if responseBody.Data.Status == "PROCESSING" {
-		MakeOrderStatusRequest(merchantOrderID, orderId)
+		MakeOrderStatusRequest(client, merchantOrderID, orderId)
 	}
 }
